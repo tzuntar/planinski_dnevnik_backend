@@ -58,7 +58,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_05_100656) do
     t.datetime "created_at", null: false
     t.string "email"
     t.string "name"
-    t.string "password_digest"
+    t.string "password_digest"  # <- User (has_secure_password)
     t.datetime "updated_at", null: false
   end
 
