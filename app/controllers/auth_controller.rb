@@ -1,7 +1,7 @@
 class AuthController < ApplicationController
   require "jwt"
-  before_action :login_params, only: [:login]
-  before_action :register_params, only: [:register]
+  before_action :login_params, only: [ :login ]
+  before_action :register_params, only: [ :register ]
 
   def login
     user = User.find_by(email: params[:email])
@@ -14,7 +14,7 @@ class AuthController < ApplicationController
   end
 
   def register
-    user = User.new(:register_params)
+    user = User.new(params)
 
     if user.save  # avtomatsko (poskusi) dodat nov entry, hasha password etc... (noro dobr!)
       token = encode_token({ user_id: user.id })
@@ -32,10 +32,18 @@ class AuthController < ApplicationController
   private
 
   def login_params
-    params.permit(:email, :password)
+    begin
+      params.require([ :email, :password ])
+    rescue ActionController::ParameterMissing
+      render json: { error: "Missing required parameters" }, status: :unprocessable_content
+    end
   end
 
   def register_params
-    params.permit(:email,:name,:password)
+    begin
+      params.require([ :email, :password, :name ])
+    rescue ActionController::ParameterMissing
+      render json: { error: "Missing required parameters" }, status: :unprocessable_content
+    end
   end
 end
