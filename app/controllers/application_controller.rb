@@ -4,7 +4,12 @@ class ApplicationController < ActionController::API
   private
 
   def encode_token(payload)
+    payload[:exp] = 1.day.from_now.to_i
     JWT.encode(payload, Rails.application.secret_key_base, "HS256")
+  end
+
+  def decode_token(token)
+    JWT.decode(token, Rails.application.secret_key_base, true, algorithm: "HS256")
   end
 
   def auth_header

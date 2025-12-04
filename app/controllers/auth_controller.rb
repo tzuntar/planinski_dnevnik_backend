@@ -1,6 +1,7 @@
 class AuthController < ApplicationController
   require "jwt"
   before_action :login_params, only: [ :login ]
+  before_action :refresh_params, only: :refresh_token
 
   def login
     user = User.find_by(email: params[:email])
@@ -25,7 +26,10 @@ class AuthController < ApplicationController
   end
 
   def refresh_token
-
+    decoded_token = decode_token(params[:token])
+    user_id = decoded_token[0]["user_id"]
+    token = encode_token({ user_id: user_id })
+    render json: { access_token: token, refresh_token: token }, status: :ok
   end
 
   private
@@ -41,6 +45,14 @@ class AuthController < ApplicationController
   def register_params
     begin
       params.permit(:email, :password, :name)
+    rescue ActionController::ParameterMissing
+      render json: { error: "Missing required parameters" }, status: :unprocessable_content
+    end
+  end
+
+  def refresh_params
+    begin
+      params.require(:token)
     rescue ActionController::ParameterMissing
       render json: { error: "Missing required parameters" }, status: :unprocessable_content
     end
