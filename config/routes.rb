@@ -11,4 +11,5 @@ Rails.application.routes.draw do
   post "/auth/login", to: "auth#login"
   post "/auth/register", to: "auth#register"
   post "/auth/refresh", to: "auth#refresh_token"
+  get "feed", to: "feed#get"
 end
