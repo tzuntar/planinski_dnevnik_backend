@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_02_170928) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_07_155010) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -24,9 +24,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_02_170928) do
     t.datetime "created_at", null: false
     t.text "description"
     t.integer "is_public"
-    t.integer "nadmorska_visina"
     t.string "name"
-    t.bigint "peak_id", null: false
+    t.bigint "peak_id"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["peak_id"], name: "index_journal_entries_on_peak_id"
@@ -44,6 +43,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_02_170928) do
   end
 
   create_table "peaks", force: :cascade do |t|
+    t.integer "altitude"
     t.bigint "country_id", null: false
     t.datetime "created_at", null: false
     t.text "description"
