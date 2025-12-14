@@ -1,7 +1,17 @@
 class JournalEntriesController < ApplicationController
   before_action :authorized
 
+  def index
+    @entries = JournalEntry.where(user_id: current_user.id)
+      .includes(:peak)
+      .offset((params[:page] || 0) * (params[:limit] || 10))
+      .limit(params[:limit] || 10)
+    render json: @entries
+  end
+
   def create
+    # no touchie
+    # noinspection RubyMismatchedArgumentType
     entry_attribs = JSON.parse(params[:journal_entry])
     peak = Peak.find_or_create_by!(name: entry_attribs["peak"])
     photo_path = save_photo(params[:photo]) if params[:photo].present?
