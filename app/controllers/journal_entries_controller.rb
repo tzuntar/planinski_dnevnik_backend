@@ -1,22 +1,40 @@
 class JournalEntriesController < ApplicationController
   before_action :authorized
-  before_action :journal_entry_params, only: [:create]
 
   def create
-    peak = Peak.find_or_create_by!(name: params[:peak])
-    @entry = JournalEntry.new(journal_entry_params)
-    @entry.peak = peak
+    entry_attribs = JSON.parse(params[:journal_entry])
+    peak = Peak.find_or_create_by!(name: entry_attribs["peak"])
+    photo_path = save_photo(params[:photo]) if params[:photo].present?
+
+    @entry = JournalEntry.new(
+      name: entry_attribs["name"],
+      description: entry_attribs["description"],
+      is_public: entry_attribs["is_public"],
+      peak: peak,
+      user: current_user,
+      photo_path: photo_path
+    )
 
     if @entry.save
-      render json: @entry
+      render json: @entry, status: :created
     else
-      render json: { error: @entry.errors.messages }, status: :bad_request
+      render json: { error: @entry.errors.full_messages }, status: :bad_request
     end
   end
 
   private
 
-  def journal_entry_params
-    params.permit(:name, :description, :peak, :user_id)
+  def save_photo(uploaded_file)
+    extension = File.extname(uploaded_file.original_filename)
+    filename = "#{SecureRandom.uuid}#{extension}"
+
+    upload_dir = Rails.root.join("public", "uploads")
+    FileUtils.mkdir_p(upload_dir)
+    full_path = upload_dir.join(filename)
+
+    File.open(full_path, "wb") do |f|
+      f.write(uploaded_file.read)
+    end
+    "/uploads/#{filename}"
   end
 end
