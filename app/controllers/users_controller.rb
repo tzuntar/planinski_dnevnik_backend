@@ -8,7 +8,9 @@ class UsersController < ApplicationController
 
   # GET /users/:id
   def show
-    user = User.find_by(id: params[:id])
-    render json: { user: user }
+    user = User.includes(:journal_entries).find(params[:id])
+    render json: user.as_json.merge(
+      posts: user.journal_entries
+    )
   end
 end
