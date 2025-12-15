@@ -7,7 +7,7 @@ class UsersController < ApplicationController
   end
 
   def update_bio
-    user = { user: current_user }
+    user = current_user
     
     if user.update(bio: params[:bio])
       render json: { message: "success", bio: user.bio }, status: :ok
