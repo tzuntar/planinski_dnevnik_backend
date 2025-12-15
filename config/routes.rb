@@ -11,4 +11,5 @@ Rails.application.routes.draw do
   post "/auth/register", to: "auth#register"
   post "/auth/refresh", to: "auth#refresh_token"
   get "feed", to: "feed#get"
+  patch "update_bio", to: "users#update_bio"
 end
