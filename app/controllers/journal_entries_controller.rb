@@ -22,7 +22,8 @@ class JournalEntriesController < ApplicationController
       is_public: entry_attribs["is_public"],
       peak: peak,
       user: current_user,
-      photo_path: photo_path
+      photo_path: photo_path,
+      weather: entry_attribs["weather"]
     )
 
     if @entry.save
