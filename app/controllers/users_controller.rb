@@ -22,13 +22,13 @@ class UsersController < ApplicationController
     if user.authenticate(params[:oldPassword])
 
       if (user.update(password: params[:newPassword]))
-        render json: { message: "Geslo uspešno spremenjeno!" }, status :ok
+        render json: { message: "Geslo uspešno spremenjeno!" }, status: :ok
       else 
-        render json: {error: "Geslo ne ustreza pogojem."}, status :unprocessable_entity
+        render json: {error: "Geslo ne ustreza pogojem."}, status: :unprocessable_entity
       end
 
     else
-      render json: { error: "Staro geslo je napačno." }, status :unauthorized
+      render json: { error: "Staro geslo je napačno." }, status: :unauthorized
     end
 
   end
