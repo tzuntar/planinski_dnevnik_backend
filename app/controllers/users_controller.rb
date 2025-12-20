@@ -15,7 +15,7 @@ class UsersController < ApplicationController
       render json: { error: "Napaka pri shranjevanju bio-ta" }, status: :unprocessable_entity
     end
   end
-
+  # POST /change-password
   def change_password
     user = current_user
 
