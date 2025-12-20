@@ -16,11 +16,13 @@ class JournalEntriesController < ApplicationController
 
     ActiveRecord::Base.transaction do
       # --- for the country ---
-      country_attribs = entry_attribs.dig("peak", "country")
+      country_name = entry_attribs.dig("peak", "country")
+      country_id = entry_attribs.dig("peak", "country_id")
       country =
-        if country_attribs.present?
-          Country.find_by(country_attribs) ||
-            Country.create!(country_attribs)
+        if country_id.present?
+          Country.find_by(id: country_id)
+        elsif country_name.present?
+          Country.find_or_create_by!(name: country_name)
         end
 
       # --- for the peak ---
