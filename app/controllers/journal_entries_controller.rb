@@ -6,7 +6,15 @@ class JournalEntriesController < ApplicationController
       .includes(:peak)
       .offset((params[:page] || 0) * (params[:limit] || 10))
       .limit(params[:limit] || 10)
-    render json: @entries
+    render json: @entries.as_json(
+      include: {
+        peak: {
+          include: {
+            country: { only: [:id, :name] }
+          }
+        }
+      }
+    )
   end
 
   def create
