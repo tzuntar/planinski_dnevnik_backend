@@ -76,6 +76,65 @@ class JournalEntriesController < ApplicationController
     end
   end
 
+  def update
+    # noinspection RubyMismatchedArgumentType
+    entry_attribs = JSON.parse(params[:journal_entry])
+
+    ActiveRecord::Base.transaction do
+      entry = JournalEntry.find(params[:id])
+
+      # --- for the country ---
+      country_name = entry_attribs.dig("peak", "country")
+      country_id = entry_attribs.dig("peak", "country_id")
+      country =
+        if country_id.present?
+          Country.find_by(id: country_id)
+        elsif country_name.present?
+          Country.find_or_create_by!(name: country_name)
+        end
+
+      # --- for the peak ---
+      peak_attribs = entry_attribs["peak"].slice("name", "altitude")
+      peak_attribs["country"] = country if country
+      peak =
+        Peak.find_by(peak_attribs) ||
+        Peak.create!(peak_attribs)
+
+      # --- for the photo --
+      photo_path =
+        if params[:photo].present?
+          save_photo(params[:photo])
+        end
+
+      # --- final journal entry ---
+      entry.update!(
+        name: entry_attribs["name"],
+        description: entry_attribs["description"],
+        is_public: entry_attribs["is_public"],
+        weather: entry_attribs["weather"],
+        peak: peak,
+        photo_path: photo_path
+      )
+
+      render json: entry.as_json(
+        include: {
+          peak: {
+            include: {
+              country: { only: [:id, :name] }
+            }
+          }
+        }
+      ), status: :created
+
+    rescue ActiveRecord::RecordNotFound
+      render json: { error: "Entry does not exist" }, status: :bad_request
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { error: e.record.errors.full_messages }, status: :bad_request
+    rescue JSON::ParseError
+      render json: { error: "Invalid JSON" }, status: :bad_request
+    end
+  end
+
   private
 
   def save_photo(uploaded_file)
