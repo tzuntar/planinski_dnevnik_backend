@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   post "/auth/login", to: "auth#login"
   post "/auth/register", to: "auth#register"
   post "/auth/refresh", to: "auth#refresh_token"
+  post "/change-password/" to: "users#change_password"
   get "feed", to: "feed#get"
   patch "update_bio", to: "users#update_bio"
 end

@@ -16,6 +16,23 @@ class UsersController < ApplicationController
     end
   end
 
+  def change_password
+    user = current_user
+
+    if user.authenticate(params[:oldPassword])
+
+      if (user.update(password: params[:newPassword]))
+        render json: { message: "Geslo uspešno spremenjeno!" }, status :ok
+      else 
+        render json: {error: "Geslo ne ustreza pogojem."}, status :unprocessable_entity
+      end
+
+    else
+      render json: { error: "Staro geslo je napačno." }, status :unauthorized
+    end
+
+  end
+
   # GET /users/:id
   def show
     user = User.includes(:journal_entries).find(params[:id])
