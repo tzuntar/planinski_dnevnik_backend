@@ -14,7 +14,8 @@ class FeedController < ApplicationController
             country: { only: [:id, :name] }
           }
         },
-        user: { only: [ :id, :name, :photo_path ] },
+        # user: { only: [ :id, :name, :photo_path ] },
+        user: {}
       }
     )
   end

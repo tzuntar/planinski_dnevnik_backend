@@ -70,6 +70,7 @@ class JournalEntriesController < ApplicationController
       ), status: :created
 
     rescue ActiveRecord::RecordInvalid => e
+      puts e
       render json: { error: e.record.errors.full_messages }, status: :bad_request
     rescue JSON::ParseError
       render json: { error: "Invalid JSON" }, status: :bad_request
