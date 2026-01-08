@@ -136,6 +136,11 @@ class JournalEntriesController < ApplicationController
     end
   end
 
+  def destroy
+    JournalEntry.find(params[:id]).destroy!
+    render json: { 'status': "ok" }
+  end
+
   private
 
   def save_photo(uploaded_file)
