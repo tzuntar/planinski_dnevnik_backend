@@ -67,7 +67,15 @@ class UsersController < ApplicationController
 
     render json: user.as_json.merge(
       photo_uri: full_photo_uri,
-      posts: user.journal_entries
+      posts: user.journal_entries.as_json(
+        include: {
+          peak: {
+            include: {
+              country: { only: [:id, :name] }
+            }
+          }
+        }
+      )
     )
   end
 
